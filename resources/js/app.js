@@ -1,7 +1,14 @@
 import "./bootstrap";
 import { createApp } from "vue";
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
+import store from "./store";
 
 const app = createApp({});
+
+app.use(ElementPlus);
+
+app.use(store);
 
 import ExampleComponent from "./components/ExampleComponent.vue";
 app.component("example-component", ExampleComponent);

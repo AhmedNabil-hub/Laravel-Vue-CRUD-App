@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -16,3 +17,5 @@ Route::get('/home', [HomeController::class, 'index'])
 Route::get('/about', function() {
 	return view('example');
 });
+
+Route::resource('employees', EmployeeController::class);
