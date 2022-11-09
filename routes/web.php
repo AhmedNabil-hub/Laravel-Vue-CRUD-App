@@ -20,3 +20,4 @@ Route::get('/about', function() {
 
 Route::resource('employees', EmployeeController::class);
 Route::get('/api/employees', [EmployeeController::class, 'apiIndex']);
+Route::get('/api/employees/{employee}', [EmployeeController::class, 'apiShow']);

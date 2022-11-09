@@ -32,8 +32,54 @@ class EmployeeController extends Controller
 		$employee = Employee::create($validated_data);
 
 		return response(
-			$employee,
+			['data' => $employee],
 			201,
+		);
+	}
+
+	public function show(Employee $employee)
+	{
+		$data = [
+			'scope' => 'show',
+			'id' => $employee->id,
+		];
+
+		return view('employee.show')
+			->with('data', $data)
+			->with('employee', $employee);
+	}
+
+	public function edit(Employee $employee)
+	{
+		$data = [
+			'scope' => 'edit',
+			'id' => $employee->id,
+		];
+
+		return view('employee.edit')
+			->with('data', $data)
+			->with('employee', $employee);
+	}
+
+	public function update(Request $request, Employee $employee)
+	{
+		$validated_data = $request->all();
+
+		$employee->update($validated_data);
+
+		return response(
+			['data' => $employee],
+			201,
+		);
+	}
+
+	public function destroy(Employee $employee)
+	{
+		$employee->delete();
+
+		return response(
+			['message' => 'Employee deleted successfully'],
+			200
 		);
 	}
 
@@ -43,6 +89,14 @@ class EmployeeController extends Controller
 
 		return response(
 			['data' => $employees],
+			200,
+		);
+	}
+
+	public function apiShow(Employee $employee)
+	{
+		return response(
+			['data' => $employee],
 			200,
 		);
 	}

@@ -12,7 +12,11 @@
 						</a>
 					</template>
 					<div>
-						<el-table :data="tableData" style="width: 100%" height="450">
+						<el-table
+							:data="filterTableData"
+							style="width: 100%"
+							height="450"
+						>
 							<el-table-column
 								v-for="column in columns"
 								:key="column.label"
@@ -24,7 +28,7 @@
 								:align="column.align"
 								:header-align="column.align"
 							/>
-							<el-table-column align="right">
+							<el-table-column align="right" min-width="150">
 								<template #header>
 									<el-input
 										v-model="search"
@@ -34,17 +38,26 @@
 								</template>
 								<template #default="scope">
 									<el-button
-										size="mini"
-										type="success"
-										@click="handleEdit(scope.$index, scope.row)"
-										>Edit</el-button
+										:icon="View"
+										circle
+										type="info"
+										@click="showEmployee(scope.$index, scope.row)"
 									>
+									</el-button>
 									<el-button
-										size="mini"
-										type="danger"
-										@click="handleDelete(scope.$index, scope.row)"
-										>Delete</el-button
+										:icon="Edit"
+										circle
+										type="success"
+										@click="editEmployee(scope.$index, scope.row)"
 									>
+									</el-button>
+									<el-button
+										:icon="Delete"
+										circle
+										type="danger"
+										@click="deleteEmployee(scope.$index, scope.row)"
+									>
+									</el-button>
 								</template>
 							</el-table-column>
 						</el-table>
@@ -58,13 +71,22 @@
 <script setup>
 import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
+import { Delete, Edit, View } from "@element-plus/icons-vue";
 
-const props = defineProps([]);
+const props = defineProps(["scope", "id"]);
 const store = useStore();
 
 store.dispatch("getEmployees");
 
 const tableData = computed(() => store.getters.employeesTableData);
+const search = ref("");
+const filterTableData = computed(() =>
+	tableData.value.filter(
+		(data) =>
+			!search.value ||
+			data.name.toLowerCase().includes(search.value.toLowerCase())
+	)
+);
 
 const columns = reactive([
 	{
@@ -80,7 +102,7 @@ const columns = reactive([
 		prop: "department",
 		label: "Department",
 		minWidth: 100,
-		sortable: false,
+		sortable: true,
 		hidden: true,
 		align: "center",
 		fixed: true,
@@ -89,7 +111,7 @@ const columns = reactive([
 		prop: "section",
 		label: "Section",
 		minWidth: 100,
-		sortable: false,
+		sortable: true,
 		hidden: true,
 		align: "center",
 		fixed: true,
@@ -98,12 +120,28 @@ const columns = reactive([
 		prop: "email",
 		label: "Email",
 		minWidth: 100,
-		sortable: false,
+		sortable: true,
 		hidden: true,
 		align: "center",
 		fixed: true,
 	},
 ]);
+
+function showEmployee(index, row) {
+	window.location.href = `/employees/${row.id}`;
+}
+
+function editEmployee(index, row) {
+	window.location.href = `/employees/${row.id}/edit`;
+}
+
+function deleteEmployee(index, row) {
+	store.dispatch("deleteEmployee", {
+		id: row.id,
+	});
+
+	store.dispatch("getEmployees");
+}
 </script>
 
 <style lang="scss" scoped></style>

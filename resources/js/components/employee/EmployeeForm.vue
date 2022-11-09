@@ -17,30 +17,34 @@
 							<el-row :gutter="10">
 								<el-form-item label="Name" required prop="name">
 									<el-input
+										:readonly="props.scope == 'show'"
 										v-model="form.name"
 										aria-placeholder="Employee Name"
 									/>
 								</el-form-item>
 								<el-form-item label="Department" required prop="department">
 									<el-input
+										:readonly="props.scope == 'show'"
 										v-model="form.department"
 										aria-placeholder="Employee Department"
 									/>
 								</el-form-item>
 								<el-form-item label="Section" required prop="section">
 									<el-input
+										:readonly="props.scope == 'show'"
 										v-model="form.section"
 										aria-placeholder="Employee Section"
 									/>
 								</el-form-item>
 								<el-form-item label="Email" required prop="email">
 									<el-input
+										:readonly="props.scope == 'show'"
 										v-model="form.email"
 										aria-placeholder="Employee Email"
 									/>
 								</el-form-item>
 							</el-row>
-							<el-row :gutter="10">
+							<el-row :gutter="10" v-if="props.scope != 'show'">
 								<el-form-item>
 									<el-button type="success" @click="saveForm(employeeForm)">
 										Save
@@ -56,13 +60,14 @@
 </template>
 
 <script setup>
+import axios from "axios";
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 
-const props = defineProps(["scope"]);
+const props = defineProps(["scope", "id"]);
 const store = useStore();
 
-const form = reactive({
+const form = ref({
 	name: "",
 	department: "",
 	section: "",
@@ -71,6 +76,13 @@ const form = reactive({
 
 const employeeForm = ref(null);
 
+if (props.scope == "edit" || props.scope == "show") {
+	axios.get(`/api/employees/${props.id}`).then((res) => {
+		let employee = res.data.data;
+		form.value = employee;
+	});
+}
+
 function goBack() {
 	window.location.href = "/employees";
 }
@@ -78,7 +90,16 @@ function goBack() {
 function saveForm(formElement) {
 	formElement.validate((valid) => {
 		if (valid) {
-			store.dispatch('saveEmployee', form)
+			if (props.scope == "create") {
+				store.dispatch("saveEmployee", {
+					form: form.value,
+				});
+			} else {
+				store.dispatch("updateEmployee", {
+					form: form.value,
+					id: props.id,
+				});
+			}
 		} else {
 			console.log("error submit!");
 			return false;
