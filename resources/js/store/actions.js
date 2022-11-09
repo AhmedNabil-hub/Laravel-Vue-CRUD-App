@@ -1,22 +1,8 @@
 import axios from "axios";
 
-let loader = null;
-
-function displayLoader(loadingText = "Loading...") {
-	loader = ElLoading.service({
-		lock: true,
-		text: loadingText,
-		background: "rgba(0, 0, 0, 0.7)",
-	});
-}
-
-function removeLoader() {
-	loader.close();
-}
-
 const actions = {
 	saveEmployee({ commit }, payload) {
-		displayLoader();
+		commit('displayLoader');
 
 		axios
 			.post("/employees", payload)
@@ -27,7 +13,7 @@ const actions = {
 					type: "success",
 				});
 
-				removeLoader();
+				commit('removeLoader');
 
 				setTimeout(() => {
 					window.location.href = "/employees";
@@ -35,6 +21,18 @@ const actions = {
 			})
 			.catch((err) => {});
 	},
+	getEmployees({commit}) {
+		commit("displayLoader");
+
+		axios
+			.get("/api/employees")
+			.then((res) => {
+				commit('setEmployees', res.data.data);
+
+				commit('removeLoader');
+			})
+			.catch((err) => {});
+	}
 };
 
 export default actions;

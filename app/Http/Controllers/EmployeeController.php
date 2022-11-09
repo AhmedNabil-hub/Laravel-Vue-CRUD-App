@@ -11,10 +11,8 @@ class EmployeeController extends Controller
 	{
 		$employees = Employee::all();
 
-		return response(
-			$employees,
-			200,
-		);
+		return view('employee.index')
+			->with('employees', $employees);
 	}
 
 	public function create()
@@ -36,6 +34,16 @@ class EmployeeController extends Controller
 		return response(
 			$employee,
 			201,
+		);
+	}
+
+	public function apiIndex()
+	{
+		$employees = Employee::all();
+
+		return response(
+			['data' => $employees],
+			200,
 		);
 	}
 }

@@ -5,7 +5,9 @@ import actions from "./actions";
 
 const store = createStore({
 	state: {
-
+		loading: false,
+		loader: null,
+		employees: [],
 	},
 	getters,
 	mutations,
